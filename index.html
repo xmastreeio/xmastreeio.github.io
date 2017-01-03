@@ -1,0 +1,136 @@
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no" />
+	<title>xmastree.io - The Collaborative Christmas Tree</title>
+	<meta property="og:url" content="https://xmastree.io" />
+	<meta property="og:title" content="XmasTree.io" />
+	<meta name="description" content="The Collaborative Christmas Tree. Come decorate the tree!">
+	<meta property="og:description" content="The Collaborative Christmas Tree. Come decorate the tree!" />
+	<meta property="og:site_name" content="XmasTree.io" />
+	<meta property="og:image" content="https://xmastree.io/favicon.png" />
+	<meta property="og:type" content="product" />
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css" />
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+<link href="bundle.css?ae2717c9fac5fd4e8798" rel="stylesheet"></head>
+
+<body>
+	<div id="top">
+		<div id="title">xmastree.io</div>
+		<div id="subtext">The Collaborative Christmas Tree</div>
+		<div id="top-button-container">
+			<button type="button" class="btn btn-lg btn-primary hidden" id="top-place-decoration" style="display:none">
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				Place a decoration
+			</button>
+			<button type="button" class="btn btn-lg btn-default hidden" id="top-logout">
+				Logout
+			</button>
+		</div>
+	</div>
+	<div id="map"></div>
+
+	<div id="social-sharing-buttons">
+		<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://xmastree.io/" data-text="Come help me decorate the Christmas Tree" data-via="xmastreeio" data-dnt="true"></a>
+		<div class="fb-share-button" data-href="https://xmastree.io/" data-layout="button" data-mobile-iframe="true"></div>
+	</div>
+
+	<!-- Welcome first time modal -->
+	<div class="modal fade" id="modal-welcome">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Welcome to xmastree.io</h4>
+				</div>
+				<div class="modal-body">
+					<p>Welcome to our shared Christmas Tree.</p>
+					<p>Here you can view the tree with everyone's decorations!</p>
+					<p>xmastree.io will probably be back next year, come back again :)</p>
+					<a class="btn btn-block btn-success" data-dismiss="modal">
+						Cool, let me see it!
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Need to login modal -->
+	<div class="modal fade" id="modal-login">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Please sign in</h4>
+				</div>
+				<div class="modal-body">
+					<p>Please sign in to place a decoration. You can place one every day until Christmas!</p>
+
+					<div class="sign-in-buttons-area">
+							<a class="btn btn-block btn-social btn-twitter" href="/auth/twitter">
+								<span class="fa fa-twitter"></span> Sign in with Twitter
+							</a>
+							<a class="btn btn-block btn-social btn-facebook" href="/auth/facebook">
+								<span class="fa fa-facebook"></span> Sign in with Facebook
+							</a>
+							<a class="btn btn-block btn-social btn-google" href="/auth/google">
+								<span class="fa fa-google"></span> Sign in with Google
+							</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Attribution modal -->
+	<div class="modal fade" id="modal-attribution">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Attribution</h4>
+				</div>
+				<div class="modal-body">
+					<p>The Christmas tree and decorations are from <a href="http://www.freepik.com/free-vector/christmas-tree-background-with-bow-and-balls_981549.htm" target="_blank">freepix.com</a>. Thank you!</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div id="placement-instructions" class="hidden">
+		<div class="btn btn-default btn-lg">
+			Click or drag your decoration to move it
+		</div>
+	</div>
+	<div id="placement-confirm-box" class="hidden">
+		<div class="btn-group btn-group-lg">
+			<button type="button" id="placement-cancel" class="btn btn-danger">Cancel</button>
+			<button type="button" id="placement-locate" class="btn btn-info">Locate</button>
+			<button type="button" id="placement-place" class="btn btn-success">Place my Decoration</button>
+		</div>
+	</div>
+
+	<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+		crossorigin="anonymous"></script>
+	<script src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.6" async></script>
+	<script src="https://platform.twitter.com/widgets.js" async></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-88232739-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+<script type="text/javascript" src="bundle.js?ae2717c9fac5fd4e8798"></script></body>
+
+</html>
